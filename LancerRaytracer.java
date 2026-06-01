@@ -35,26 +35,29 @@ public class LancerRaytracer {
         // Initialisation d'une scène depuis le modèle 
         Scene scene = new Scene(fichier_description, largeur, hauteur);
         
-        // Calcul de l'image de la scène les paramètres : 
-        // - x0 et y0 : correspondant au coin haut à gauche
-        // - l et h : hauteur et largeur de l'image calculée
-        // Ici on calcule toute l'image (0,0) -> (largeur, hauteur)
+
         
-        int x0 = 0, y0 = 0;
-        int l = largeur, h = hauteur;
+        // calcul de la taille d'un carré (la moitié de l'image)
+        int tileL = largeur / 2;
+        int tileH = hauteur / 2;
                 
-        // Chronométrage du temps de calcul
+        // Chronométrage du temps de calcul total
         Instant debut = Instant.now();
-        System.out.println("Calcul de l'image :\n - Coordonnées : "+x0+","+y0
-                           +"\n - Taille "+ largeur + "x" + hauteur);
-        Image image = scene.compute(x0, y0, l, h);
+        System.out.println("Calcul de l'image par dalles...");
+
+        // rendu et affichage du carré haut-gauche (coordonnées 0, 0)
+        Image tileTL = scene.compute(0, 0, tileL, tileH);
+        disp.setImage(tileTL, 0, 0);
+
+        // rendu et affichage du carré bas-droite (coordonnées tileL, tileH)
+        Image tileBR = scene.compute(tileL, tileH, tileL, tileH);
+        disp.setImage(tileBR, tileL, tileH);
+
         Instant fin = Instant.now();
 
         long duree = Duration.between(debut, fin).toMillis();
         
         System.out.println("Image calculée en :"+duree+" ms");
-        
-        // Affichage de l'image calculée
-        disp.setImage(image, x0, y0);
+    
     }	
 }
