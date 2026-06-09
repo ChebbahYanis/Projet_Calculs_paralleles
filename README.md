@@ -36,6 +36,7 @@ Notre application repose sur trois composants distincts :
 ├── simple.txt            # Fichier de description de la scène par défaut
 ├── rapport_projet.pdf    # Rapport contenant l'analyse, les schémas et diagrammes
 └── demo_raytracer.mp4    # Capture vidéo de l'exécution répartie
+```
 
 ---
 
