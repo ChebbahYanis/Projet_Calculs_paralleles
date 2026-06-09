@@ -10,10 +10,10 @@ import raytracer.Scene;
 public class ClientRendu {
     public static void main(String[] arguments) {
         // parametres de base
+        String ipCoordinateur = (arguments.length > 0) ? arguments[0] : "localhost";
         String fichierScene = "simple.txt";
         int largeur = 800;
         int hauteur = 600;
-        String nomImage = "rendu_final";
 
         try {
             // chargement de la scene
@@ -21,8 +21,8 @@ public class ClientRendu {
             Scene scene = new Scene(fichierScene, largeur, hauteur);
 
             // connexion rmi
-            System.out.println("Connexion au coordinateur...");
-            Registry registre = LocateRegistry.getRegistry("localhost", 1099);
+            System.out.println("Connexion au coordinateur sur l'IP : " + ipCoordinateur);
+            Registry registre = LocateRegistry.getRegistry(ipCoordinateur, 1099);
             ServiceCoordinateur coordinateur = (ServiceCoordinateur) registre.lookup(ServiceCoordinateur.NOM_REGISTRE);
 
             // verif des effectifs
@@ -36,9 +36,9 @@ public class ClientRendu {
             Image imageFinale = coordinateur.lancerLeRendu(scene, largeur, hauteur);
             long fin = System.currentTimeMillis();
 
+            String nomImage = "rendu_rmi.png";
             imageFinale.save(nomImage, "png");
             System.out.println("Image reçue en " + (fin - debut) + " ms");
-            System.out.println("Image sauvegardée sous le nom : " + nomImage + ".png");
 
             // on affiche dans une fenetre 
             Disp fenetre = new Disp("Raytracer RMI", largeur, hauteur);
