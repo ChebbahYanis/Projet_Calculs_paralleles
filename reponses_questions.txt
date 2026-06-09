@@ -1,0 +1,98 @@
+En utilisant votre meilleur outil, votre imagination, décrivez et illustrez comment cela pourrait être réalisé, sans rentrer dans les détails JAVA, que vous n'allez pas tarder à mettre en œuvre.
+
+Q1)
+Parallélisation du calcul d’une image par raytracing
+Principe général
+
+Le programme de raytracing doit calculer la couleur de chaque pixel d’une image. Pour chaque pixel, il envoie un rayon virtuel depuis la caméra vers la scène afin de déterminer l’objet visible, son éclairage, ses ombres et ses éventuels reflets.
+
+Ce calcul peut devenir très long lorsque l’image est grande ou lorsque la scène contient beaucoup d’objets. L’objectif est donc de répartir le travail entre plusieurs machines afin de réduire le temps de calcul.
+
+Découpage du travail
+
+Le calcul de chaque pixel est indépendant des autres pixels. Il est donc possible de découper l’image en plusieurs zones, par exemple en bandes horizontales.
+
+Pour une image de 800 × 600 pixels et quatre machines disponibles, le découpage pourrait être le suivant :
+
+Machine	Zone calculée
+Machine 1	lignes 0 à 149
+Machine 2	lignes 150 à 299
+Machine 3	lignes 300 à 449
+Machine 4	lignes 450 à 599
+
+Chaque machine reçoit la description complète de la scène, mais elle ne calcule que les pixels de la zone qui lui a été attribuée.
+
+Organisation proposée
+
+Une machine principale joue le rôle de coordinateur. Elle découpe l’image, distribue les différentes zones aux machines de calcul, récupère les résultats, puis assemble les morceaux dans le bon ordre.
+
+Les autres machines sont des machines de calcul. Elles reçoivent une zone de l’image, effectuent le raytracing uniquement pour cette zone, puis renvoient le résultat au coordinateur.
+
+Schéma de fonctionnement
+                        IMAGE À CALCULER
+                         800 × 600 pixels
+                                │
+                                ▼
+                  ┌─────────────────────────┐
+                  │      COORDINATEUR       │
+                  │                         │
+                  │  Découpe l’image en     │
+                  │  plusieurs zones        │
+                  └─────────────────────────┘
+                     │       │       │       │
+                     │       │       │       │
+          ┌──────────┘       │       │       └──────────┐
+          ▼                  ▼       ▼                  ▼
+
+ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐ ┌────────────────┐
+ │   MACHINE 1    │ │   MACHINE 2    │ │   MACHINE 3    │ │   MACHINE 4    │
+ │                │ │                │ │                │ │                │
+ │ Calcule les    │ │ Calcule les    │ │ Calcule les    │ │ Calcule les    │
+ │ lignes 0 à 149 │ │ lignes         │ │ lignes         │ │ lignes         │
+ │                │ │ 150 à 299      │ │ 300 à 449      │ │ 450 à 599      │
+ └────────────────┘ └────────────────┘ └────────────────┘ └────────────────┘
+          │                  │       │                  │
+          │                  │       │                  │
+          └──────────┐       │       │       ┌──────────┘
+                     ▼       ▼       ▼       ▼
+                  ┌─────────────────────────┐
+                  │      COORDINATEUR       │
+                  │                         │
+                  │ Récupère et assemble    │
+                  │ les différentes zones   │
+                  └─────────────────────────┘
+                                │
+                                ▼
+                     IMAGE FINALE COMPLÈTE
+Exemple visuel du découpage
+Image complète avant calcul
+┌──────────────────────────────────────────┐
+│              Zone 1                      │  → Machine 1
+├──────────────────────────────────────────┤
+│              Zone 2                      │  → Machine 2
+├──────────────────────────────────────────┤
+│              Zone 3                      │  → Machine 3
+├──────────────────────────────────────────┤
+│              Zone 4                      │  → Machine 4
+└──────────────────────────────────────────┘
+Étapes du traitement
+Le coordinateur lit la scène à calculer.
+Il découpe l’image en plusieurs zones.
+Il envoie une zone à chaque machine disponible.
+Toutes les machines calculent leur partie en parallèle.
+Chaque machine renvoie son morceau d’image.
+Le coordinateur rassemble les morceaux.
+L’image complète est enregistrée ou affichée.
+Intérêt de cette méthode
+
+Sans parallélisation, une seule machine doit calculer tous les pixels de l’image.
+
+Avec plusieurs machines, les différentes zones sont calculées simultanément. Le temps de calcul peut donc être fortement réduit.
+
+Par exemple, avec quatre machines de puissance similaire, chacune ne calcule qu’environ un quart de l’image.
+
+Conclusion
+
+   Ce projet consiste à transformer le programme de raytracing en un calcul réparti. Une machine principale distribue les différentes parties de l’image à plusieurs machines de calcul. Chaque machine calcule une zone indépendamment, puis les résultats sont assemblés pour obtenir l’image finale.
+
+Cette méthode correspond à une parallélisation des données, car les pixels de l’image sont répartis entre plusieurs machines.
