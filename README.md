@@ -26,8 +26,9 @@ Notre application repose sur trois composants distincts :
 
 ## Arborescence du Projet
 
+```text
 ├── src/
-│   ├── calculateur/      # Contient l'implémentation des ouvriers de calcul
+│   ├── calculateur/      # Contient l'implémentation des nœuds de calcul
 │   ├── client/           # Contient les points d'entrée utilisateur (Local et RMI)
 │   ├── raytracer/        # Le moteur de rendu d'origine (modifié pour la sérialisation)
 │   ├── serveur/          # Contient l'implémentation du coordinateur central
