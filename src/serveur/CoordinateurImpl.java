@@ -82,9 +82,32 @@ public class CoordinateurImpl extends UnicastRemoteObject implements ServiceCoor
         // puis on colle chaque tranche à sa position verticale dans l'image finale
         for (ThreadCalcul thread : threads) {
             try {
-                thread.join();//attend que le thread ai fini avant de continuer 
-                if (thread.erreur != null) throw new RemoteException("Un ouvrier a planté : " + thread.erreur.getMessage());
-                copierPixels(imageFinale, thread.imageResultat, 0, thread.ligneDebut);
+                thread.join();
+                if (thread.erreur != null) {
+                    System.out.println("Ouvrier " + thread.nom + " a planté, redistribution de sa tranche...");
+                    
+                    // On cherche un ouvrier encore présent (différent de celui qui a planté)
+                    ServiceCalculateur remplacant = null;
+                    for (Map.Entry<String, ServiceCalculateur> entree : listeCalculateurs.entrySet()) {
+                        if (!entree.getKey().equals(thread.nom)) {
+                            remplacant = entree.getValue();
+                            break;
+                        }
+                    }
+                    
+                    if (remplacant == null) {
+                        throw new RemoteException("Plus aucun ouvrier disponible !");
+                    }
+                    
+                    // On relance le calcul de la tranche sur le remplaçant
+                    Image trancheRecalculee = remplacant.calculerTranche(
+                        thread.scene, 0, thread.ligneDebut, thread.largeur, thread.hauteurTranche
+                    );
+                    copierPixels(imageFinale, trancheRecalculee, 0, thread.ligneDebut);
+                    
+                } else {
+                    copierPixels(imageFinale, thread.imageResultat, 0, thread.ligneDebut);
+                }
             } catch (InterruptedException e) {
                 throw new RemoteException("Calcul interrompu.");
             }
